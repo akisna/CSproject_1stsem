@@ -5,13 +5,14 @@ from pygame.locals import * # Basic pygame imports
 
 # Global Variables for the game
 FPS = 32
+birdno=0
 SCREENWIDTH = 289
 SCREENHEIGHT = 511
 SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 GROUNDY = SCREENHEIGHT * 0.8
 GAME_SPRITES = {}
 GAME_SOUNDS = {}
-PLAYER = f'gallery/sprites/bird{random.randrange(1, 4)}.png'
+PLAYER = [ f'gallery/sprites/bird{i}.png' for i in range(1,4) ]
 BACKGROUND = 'gallery/sprites/background.png'
 PIPE = 'gallery/sprites/pipe.png'
 
@@ -19,9 +20,9 @@ def welcomeScreen():
     """
     Shows welcome images on the screen
     """
-
+    global birdno
     playerx = int(SCREENWIDTH/5)
-    playery = int((SCREENHEIGHT - GAME_SPRITES['player'].get_height())/2)
+    playery = int((SCREENHEIGHT - GAME_SPRITES['player'][birdno].get_height())/2)
     messagex = int((SCREENWIDTH - GAME_SPRITES['message'].get_width())/2)
     messagey = int(SCREENHEIGHT*0.13)
     basex = 0
@@ -31,13 +32,17 @@ def welcomeScreen():
             if event.type == QUIT or (event.type==KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
                 sys.exit()
-
+            #changing birdno
+            if event.type==KEYDOWN and event.key==K_RIGHT:
+                birdno=(birdno+1)%3             
+            if event.type==KEYDOWN and event.key==K_RIGHT:
+                birdno=(birdno-1)%3
             # If the user presses space or up key, start the game for them
             elif event.type==KEYDOWN and (event.key==K_SPACE or event.key == K_UP):
                 return
             else:
                 SCREEN.blit(GAME_SPRITES['background'], (0, 0))    
-                SCREEN.blit(GAME_SPRITES['player'], (playerx, playery))    
+                SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
                 SCREEN.blit(GAME_SPRITES['message'], (messagex,messagey ))    
                 SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
                 pygame.display.update()
@@ -92,7 +97,7 @@ def mainGame():
             return     
 
         #check for score
-        playerMidPos = playerx + GAME_SPRITES['player'].get_width()/2
+        playerMidPos = playerx + GAME_SPRITES['player'][birdno].get_width()/2
         for pipe in upperPipes:
             pipeMidPos = pipe['x'] + GAME_SPRITES['pipe'][0].get_width()/2
             if pipeMidPos<= playerMidPos < pipeMidPos +4:
@@ -106,7 +111,7 @@ def mainGame():
 
         if playerFlapped:
             playerFlapped = False            
-        playerHeight = GAME_SPRITES['player'].get_height()
+        playerHeight = GAME_SPRITES['player'][birdno].get_height()
         playery = playery + min(playerVelY, GROUNDY - playery - playerHeight)
 
         # move pipes to the left
@@ -132,7 +137,7 @@ def mainGame():
             SCREEN.blit(GAME_SPRITES['pipe'][1], (lowerPipe['x'], lowerPipe['y']))
 
         SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))
-        SCREEN.blit(GAME_SPRITES['player'], (playerx, playery))
+        SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))
         myDigits = [int(x) for x in list(str(score))]
         width = 0
         for digit in myDigits:
@@ -157,7 +162,7 @@ def isCollide(playerx, playery, upperPipes, lowerPipes):
             return True
 
     for pipe in lowerPipes:
-        if (playery + GAME_SPRITES['player'].get_height() > pipe['y']) and abs(playerx - pipe['x']) < (GAME_SPRITES['pipe'][0].get_width()/1.5):
+        if (playery + GAME_SPRITES['player'][birdno].get_height() > pipe['y']) and abs(playerx - pipe['x']) < (GAME_SPRITES['pipe'][0].get_width()/1.5):
             GAME_SOUNDS['hit'].play()
             return True
 
@@ -215,7 +220,7 @@ if __name__ == "__main__":
     GAME_SOUNDS['wing'] = pygame.mixer.Sound('gallery/audio/wing.mp3')
 
     GAME_SPRITES['background'] = pygame.image.load(BACKGROUND).convert()
-    GAME_SPRITES['player'] = pygame.image.load(PLAYER).convert_alpha()
+    GAME_SPRITES['player'] = [ pygame.image.load(PLAYER[i]).convert_alpha() for i in range(3) ]
 
     while True:
         welcomeScreen() # Shows welcome screen to the user until he presses a button
