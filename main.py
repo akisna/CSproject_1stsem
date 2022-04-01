@@ -15,7 +15,8 @@ GAME_SOUNDS = {}
 PLAYER = [ f'gallery/sprites/bird{i}.png' for i in range(1,4) ]
 BACKGROUND = 'gallery/sprites/background.png'
 PIPE = 'gallery/sprites/pipe.png'
-
+highscore=0
+score=0
 def welcomeScreen():
     """
     Shows welcome images on the screen
@@ -49,11 +50,14 @@ def welcomeScreen():
                 FPSCLOCK.tick(FPS)
 def gameover():
     global birdno
+    global highscore
     playerx = int(SCREENWIDTH/5)
     playery = int((SCREENHEIGHT - GAME_SPRITES['player'][birdno].get_height())/2)
     messagex = int((SCREENWIDTH - GAME_SPRITES['message'].get_width())/2)
     messagey = int(SCREENHEIGHT*0.13)
     basex = 0
+    if score>highscore:
+        highscore=score
     while True:
         for event in pygame.event.get():
             # if user clicks on cross button, close the game
@@ -66,11 +70,30 @@ def gameover():
             else:
                 SCREEN.blit(GAME_SPRITES['background'], (0, 0))    
                # SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
-                SCREEN.blit(GAME_SPRITES['message'], (messagex,messagey ))    
-                SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
+                #SCREEN.blit(GAME_SPRITES['message'], (messagex,messagey ))    
+                #SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY)) 
+                myDigits = [int(x) for x in list(str(score))]
+                width = 0
+                for digit in myDigits:
+                    width += GAME_SPRITES['numbers'][digit].get_width()
+                    Xoffset = (SCREENWIDTH - width)/2
+
+                for digit in myDigits:
+                    SCREEN.blit(GAME_SPRITES['numbers'][digit], (Xoffset, SCREENHEIGHT*0.12))
+                    Xoffset += GAME_SPRITES['numbers'][digit].get_width()
+                myDigitshs = [int(x) for x in list(str(highscore))]
+                width = 0
+                for digit in myDigitshs:
+                    width += GAME_SPRITES['numbers'][digit].get_width()
+                    Xoffset = (SCREENWIDTH - width)/2
+
+                for digit in myDigitshs:
+                    SCREEN.blit(GAME_SPRITES['numbers'][digit], (Xoffset, SCREENHEIGHT*0.5))
+                    Xoffset += GAME_SPRITES['numbers'][digit].get_width()   
                 pygame.display.update()
                 FPSCLOCK.tick(FPS)
 def mainGame():
+    global score
     score = 0
     playerx = int(SCREENWIDTH/5)
     playery = int(SCREENWIDTH/2)
