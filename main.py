@@ -11,7 +11,7 @@ SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
 GROUNDY = SCREENHEIGHT * 0.8
 GAME_SPRITES = {}
 GAME_SOUNDS = {}
-PLAYER = 'gallery/sprites/bird.png'
+PLAYER = f'gallery/sprites/bird{random.randrange(1, 4)}.png'
 BACKGROUND = 'gallery/sprites/background.png'
 PIPE = 'gallery/sprites/pipe.png'
 
@@ -152,12 +152,12 @@ def isCollide(playerx, playery, upperPipes, lowerPipes):
     
     for pipe in upperPipes:
         pipeHeight = GAME_SPRITES['pipe'][0].get_height()
-        if(playery < pipeHeight + pipe['y'] and abs(playerx - pipe['x']) < GAME_SPRITES['pipe'][0].get_width()):
+        if(playery < pipeHeight + pipe['y'] and abs(playerx - pipe['x']) < (GAME_SPRITES['pipe'][0].get_width())/1.5):
             GAME_SOUNDS['hit'].play()
             return True
 
     for pipe in lowerPipes:
-        if (playery + GAME_SPRITES['player'].get_height() > pipe['y']) and abs(playerx - pipe['x']) < GAME_SPRITES['pipe'][0].get_width():
+        if (playery + GAME_SPRITES['player'].get_height() > pipe['y']) and abs(playerx - pipe['x']) < (GAME_SPRITES['pipe'][0].get_width()/1.5):
             GAME_SOUNDS['hit'].play()
             return True
 
