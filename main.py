@@ -13,6 +13,7 @@ GAME_SPRITES = {}
 GAME_SOUNDS = {}
 PLAYER = f'gallery/sprites/bird{random.randrange(1, 4)}.png'
 BACKGROUND = 'gallery/sprites/background.png'
+AVATARSCREEN = 'gallery/sprites/Avatar-screen.png'
 PIPE = 'gallery/sprites/pipe.png'
 
 def welcomeScreen():
@@ -36,9 +37,9 @@ def welcomeScreen():
             elif event.type==KEYDOWN and (event.key==K_SPACE or event.key == K_UP):
                 return
             else:
-                SCREEN.blit(GAME_SPRITES['background'], (0, 0))    
-                SCREEN.blit(GAME_SPRITES['player'], (playerx, playery))    
-                SCREEN.blit(GAME_SPRITES['message'], (messagex,messagey ))    
+                SCREEN.blit(GAME_SPRITES['background'], (0, 0))
+                SCREEN.blit(GAME_SPRITES['Avatar-screen'], (0, 0))
+                SCREEN.blit(GAME_SPRITES['player'], (playerx, playery))        
                 SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
                 pygame.display.update()
                 FPSCLOCK.tick(FPS)
@@ -214,7 +215,8 @@ if __name__ == "__main__":
     GAME_SOUNDS['swoosh'] = pygame.mixer.Sound('gallery/audio/swoosh.mp3')
     GAME_SOUNDS['wing'] = pygame.mixer.Sound('gallery/audio/wing.mp3')
 
-    GAME_SPRITES['background'] = pygame.image.load(BACKGROUND).convert()
+    GAME_SPRITES['background'] = pygame.image.load(BACKGROUND).convert_alpha()
+    GAME_SPRITES['Avatar-screen'] = pygame.image.load(AVATARSCREEN).convert_alpha()
     GAME_SPRITES['player'] = pygame.image.load(PLAYER).convert_alpha()
 
     while True:
