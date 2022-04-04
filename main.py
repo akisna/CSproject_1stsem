@@ -6,6 +6,7 @@ from pygame.locals import * # Basic pygame imports
 # Global Variables for the game
 FPS = 32
 birdno=0
+bgno=0
 SCREENWIDTH = 289
 SCREENHEIGHT = 511
 SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
@@ -13,7 +14,7 @@ GROUNDY = SCREENHEIGHT * 0.8
 GAME_SPRITES = {}
 GAME_SOUNDS = {}
 PLAYER = [ f'gallery/sprites/bird{i}.png' for i in range(1,4) ]
-background = 'gallery/sprites/background.png'
+background = [ f'gallery/sprites/background{i}.png' for i in range(1,4) ]
 PIPE = 'gallery/sprites/pipe.png'
 highscore=0
 score=0
@@ -37,7 +38,7 @@ def welcomeScreen():
             elif event.type==KEYDOWN and (event.key==K_SPACE or event.key == K_UP):
                 return
             else:
-                SCREEN.blit(GAME_SPRITES['background'], (0, 0))    
+                SCREEN.blit(GAME_SPRITES['background'][bgno], (0, 0))    
                 SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
                 SCREEN.blit(GAME_SPRITES['message'], (messagex,messagey ))    
                 SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
@@ -68,12 +69,45 @@ def pickabird():
             elif event.type==KEYDOWN and (event.key==K_SPACE or event.key == K_UP):
                 return
             else:
-                SCREEN.blit(GAME_SPRITES['background'], (0, 0))    
+                SCREEN.blit(GAME_SPRITES['background'][bgno], (0, 0))    
                 SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
                 SCREEN.blit(GAME_SPRITES['avatarselect'], (avatarselectx,avatarselecty ))    
-                SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
+                #SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
                 pygame.display.update()
                 FPSCLOCK.tick(FPS)
+
+def pickabg():
+    """
+    Shows welcome images on the screen
+    """
+    global bgno
+    playerx = int(SCREENWIDTH/2.2)
+    playery = int((SCREENHEIGHT - GAME_SPRITES['player'][birdno].get_height())/2)
+    avatarselectx = int((SCREENWIDTH - GAME_SPRITES['avatarselect'].get_width())/2)
+    avatarselecty = int(SCREENHEIGHT*0.13)
+    basex = 0
+    while True:
+        for event in pygame.event.get():
+            # if user clicks on cross button, close the game
+            if event.type == QUIT or (event.type==KEYDOWN and event.key == K_ESCAPE):
+                pygame.quit()
+                sys.exit()
+            #changing birdno
+            if event.type==KEYDOWN and event.key==K_RIGHT:
+                bgno=(bgno+1)%3             
+            if event.type==KEYDOWN and event.key==K_LEFT:
+                bgno=(bgno-1)%3
+            # If the user presses space or up key, start the game for them
+            elif event.type==KEYDOWN and (event.key==K_SPACE or event.key == K_UP):
+                return
+            else:
+                SCREEN.blit(GAME_SPRITES['background'][bgno], (0, 0))    
+                SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
+                SCREEN.blit(GAME_SPRITES['avatarselect'], (avatarselectx,avatarselecty ))    
+                #SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
+                pygame.display.update()
+                FPSCLOCK.tick(FPS)
+
 def gameover():
     global birdno
     global highscore
@@ -91,10 +125,10 @@ def gameover():
                 pygame.quit()
                 sys.exit()
             # If the user presses space or up key, start the game for them
-            elif event.type==KEYDOWN and (event.key==K_SPACE or event.key == K_UP):
+            elif event.type==KEYDOWN and (event.key==K_SPACE): # or event.key == K_UP):
                 return
             else:
-                SCREEN.blit(GAME_SPRITES['background'], (0, 0))    
+                SCREEN.blit(GAME_SPRITES['background'][bgno], (0, 0))    
                # SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
                 #SCREEN.blit(GAME_SPRITES['avatarselect'], (avatarselectx,avatarselecty ))    
                 #SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY)) 
@@ -202,7 +236,7 @@ def mainGame():
             lowerPipes.pop(0)
         
         # Lets blit our sprites now
-        SCREEN.blit(GAME_SPRITES['background'], (0, 0))
+        SCREEN.blit(GAME_SPRITES['background'][bgno], (0, 0))
         for upperPipe, lowerPipe in zip(upperPipes, lowerPipes):
             SCREEN.blit(GAME_SPRITES['pipe'][0], (upperPipe['x'], upperPipe['y']))
             SCREEN.blit(GAME_SPRITES['pipe'][1], (lowerPipe['x'], lowerPipe['y']))
@@ -290,11 +324,12 @@ if __name__ == "__main__":
     GAME_SOUNDS['swoosh'] = pygame.mixer.Sound('gallery/audio/swoosh.mp3')
     GAME_SOUNDS['wing'] = pygame.mixer.Sound('gallery/audio/wing.mp3')
 
-    GAME_SPRITES['background'] = pygame.image.load(background).convert()
+    GAME_SPRITES['background'] = [ pygame.image.load(background[i]).convert() for i in range(3) ]
     GAME_SPRITES['player'] = [ pygame.image.load(PLAYER[i]).convert_alpha() for i in range(3) ]
 
     while True:
         welcomeScreen() # Shows welcome screen to the user until he presses a button
         pickabird()
+        pickabg()
         mainGame() # This is the main game function
         gameover() 
