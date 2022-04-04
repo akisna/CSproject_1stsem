@@ -15,7 +15,7 @@ GAME_SPRITES = {}
 GAME_SOUNDS = {}
 PLAYER = [ f'gallery/sprites/bird{i}.png' for i in range(1,4) ]
 background = [ f'gallery/sprites/background{i}.png' for i in range(1,4) ]
-PIPE = 'gallery/sprites/pipe.png'
+PIPE = [  f'gallery/sprites/pipe.png' for i in range(1,4) ]
 highscore=0
 score=0
 def welcomeScreen():
@@ -155,6 +155,7 @@ def gameover():
                 FPSCLOCK.tick(FPS)
 def mainGame():
     global score
+    global bgno
     score = 0
     playerx = int(SCREENWIDTH/5)
     playery = int(SCREENWIDTH/2)
@@ -205,7 +206,7 @@ def mainGame():
         #check for score
         playerMidPos = playerx + GAME_SPRITES['player'][birdno].get_width()/2
         for pipe in upperPipes:
-            pipeMidPos = pipe['x'] + GAME_SPRITES['pipe'][0].get_width()/2
+            pipeMidPos = pipe['x'] + GAME_SPRITES['pipe'][bgno][0].get_width()/2
             if pipeMidPos<= playerMidPos < pipeMidPos +4:
                 score +=1
                 print(f"Your score is {score}") 
@@ -232,15 +233,15 @@ def mainGame():
             lowerPipes.append(newpipe[1])
 
         # if the pipe is out of the screen, remove it
-        if upperPipes[0]['x'] < -GAME_SPRITES['pipe'][0].get_width():
+        if upperPipes[0]['x'] < -GAME_SPRITES['pipe'][bgno][0].get_width():
             upperPipes.pop(0)
             lowerPipes.pop(0)
         
         # Lets blit our sprites now
         SCREEN.blit(GAME_SPRITES['background'][bgno], (0, 0))
         for upperPipe, lowerPipe in zip(upperPipes, lowerPipes):
-            SCREEN.blit(GAME_SPRITES['pipe'][0], (upperPipe['x'], upperPipe['y']))
-            SCREEN.blit(GAME_SPRITES['pipe'][1], (lowerPipe['x'], lowerPipe['y']))
+            SCREEN.blit(GAME_SPRITES['pipe'][bgno][0], (upperPipe['x'], upperPipe['y']))
+            SCREEN.blit(GAME_SPRITES['pipe'][bgno][1], (lowerPipe['x'], lowerPipe['y']))
 
         SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))
         SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))
@@ -262,13 +263,13 @@ def isCollide(playerx, playery, upperPipes, lowerPipes):
         return True
     
     for pipe in upperPipes:
-        pipeHeight = GAME_SPRITES['pipe'][0].get_height()
-        if(playery < pipeHeight + pipe['y'] and abs(playerx - pipe['x']) < (GAME_SPRITES['pipe'][0].get_width())/1.5):
+        pipeHeight = GAME_SPRITES['pipe'][bgno][0].get_height()
+        if(playery < pipeHeight + pipe['y'] and abs(playerx - pipe['x']) < (GAME_SPRITES['pipe'][bgno][0].get_width())/1.5):
             GAME_SOUNDS['hit'].play()
             return True
 
     for pipe in lowerPipes:
-        if (playery + GAME_SPRITES['player'][birdno].get_height() > pipe['y']) and abs(playerx - pipe['x']) < (GAME_SPRITES['pipe'][0].get_width()/1.5):
+        if (playery + GAME_SPRITES['player'][birdno].get_height() > pipe['y']) and abs(playerx - pipe['x']) < (GAME_SPRITES['pipe'][bgno][0].get_width()/1.5):
             GAME_SOUNDS['hit'].play()
             return True
 
@@ -278,7 +279,7 @@ def getRandomPipe():
     """
     Generate positions of two pipes(one bottom straight and one top rotated ) for blitting on the screen
     """
-    pipeHeight = GAME_SPRITES['pipe'][0].get_height()
+    pipeHeight = GAME_SPRITES['pipe'][bgno][0].get_height()
     offset = SCREENHEIGHT/3
     y2 = offset + random.randrange(0, int(SCREENHEIGHT - GAME_SPRITES['base'].get_height()  - 1.2 *offset))
     pipeX = SCREENWIDTH + 10
@@ -314,9 +315,8 @@ if __name__ == "__main__":
     GAME_SPRITES['message'] =pygame.image.load('gallery/sprites/message.png').convert_alpha()
     GAME_SPRITES['avatarselect'] =pygame.image.load('gallery/sprites/avatarselect.png').convert_alpha()
     GAME_SPRITES['base'] =pygame.image.load('gallery/sprites/base.png').convert_alpha()
-    GAME_SPRITES['pipe'] =(pygame.transform.rotate(pygame.image.load( PIPE).convert_alpha(), 180), 
-    pygame.image.load(PIPE).convert_alpha()
-    )
+    GAME_SPRITES['pipe'] =[(pygame.transform.rotate(pygame.image.load(PIPE[i]).convert_alpha(), 180), 
+    pygame.image.load(PIPE[i]).convert_alpha()) for i in range(3) ]
 
     # Game sounds
     GAME_SOUNDS['die'] = pygame.mixer.Sound('gallery/audio/die.mp3')
