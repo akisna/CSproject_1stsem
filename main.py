@@ -15,7 +15,7 @@ GAME_SPRITES = {}
 GAME_SOUNDS = {}
 PLAYER = [ f'gallery/sprites/bird{i}.png' for i in range(1,4) ]
 background = [ f'gallery/sprites/background{i}.png' for i in range(1,4) ]
-PIPE = [  f'gallery/sprites/pipe.png' for i in range(1,4) ]
+PIPE = [  f'gallery/sprites/pipe{i}.png' for i in range(1,4) ]
 highscore=0
 score=0
 def welcomeScreen():
