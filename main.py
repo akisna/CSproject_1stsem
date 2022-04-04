@@ -22,10 +22,10 @@ def welcomeScreen():
     Shows welcome images on the screen
     """
     global birdno
-    playerx = int(SCREENWIDTH/5)
+    playerx = int(SCREENWIDTH/2.2)
     playery = int((SCREENHEIGHT - GAME_SPRITES['player'][birdno].get_height())/2)
-    messagex = int((SCREENWIDTH - GAME_SPRITES['message'].get_width())/2)
-    messagey = int(SCREENHEIGHT*0.13)
+    avatarselectx = int((SCREENWIDTH - GAME_SPRITES['avatarselect'].get_width())/2)
+    avatarselecty = int(SCREENHEIGHT*0.13)
     basex = 0
     while True:
         for event in pygame.event.get():
@@ -44,7 +44,7 @@ def welcomeScreen():
             else:
                 SCREEN.blit(GAME_SPRITES['background'], (0, 0))    
                 SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
-                SCREEN.blit(GAME_SPRITES['message'], (messagex,messagey ))    
+                SCREEN.blit(GAME_SPRITES['avatarselect'], (avatarselectx,avatarselecty ))    
                 SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
                 pygame.display.update()
                 FPSCLOCK.tick(FPS)
@@ -53,8 +53,8 @@ def gameover():
     global highscore
     playerx = int(SCREENWIDTH/5)
     playery = int((SCREENHEIGHT - GAME_SPRITES['player'][birdno].get_height())/2)
-    messagex = int((SCREENWIDTH - GAME_SPRITES['message'].get_width())/2)
-    messagey = int(SCREENHEIGHT*0.13)
+    avatarselectx = int((SCREENWIDTH - GAME_SPRITES['avatarselect'].get_width())/2)
+    avatarselecty = int(SCREENHEIGHT*0.13)
     basex = 0
     if score>highscore:
         highscore=score
@@ -70,7 +70,7 @@ def gameover():
             else:
                 SCREEN.blit(GAME_SPRITES['background'], (0, 0))    
                # SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
-                #SCREEN.blit(GAME_SPRITES['message'], (messagex,messagey ))    
+                #SCREEN.blit(GAME_SPRITES['avatarselect'], (avatarselectx,avatarselecty ))    
                 #SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY)) 
                 myDigits = [int(x) for x in list(str(score))]
                 width = 0
@@ -251,7 +251,7 @@ if __name__ == "__main__":
         pygame.image.load('gallery/sprites/9.png').convert_alpha(),
     )
 
-    GAME_SPRITES['message'] =pygame.image.load('gallery/sprites/message.png').convert_alpha()
+    GAME_SPRITES['avatarselect'] =pygame.image.load('gallery/sprites/avatarselect.png').convert_alpha()
     GAME_SPRITES['base'] =pygame.image.load('gallery/sprites/base.png').convert_alpha()
     GAME_SPRITES['pipe'] =(pygame.transform.rotate(pygame.image.load( PIPE).convert_alpha(), 180), 
     pygame.image.load(PIPE).convert_alpha()
