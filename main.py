@@ -14,7 +14,7 @@ GROUNDY = SCREENHEIGHT * 0.8
 GAME_SPRITES = {}
 GAME_SOUNDS = {}
 PLAYER = [ f'gallery/sprites/bird{i}.png' for i in range(1,4) ]
-background = [ f'gallery/sprites/background{i}.png' for i in range(1,4) ]
+background = [ f'gallery/sprites/background{i}.png' for i in range(1,5) ]
 PIPE = 'gallery/sprites/pipe.png'
 highscore=0
 score=0
@@ -94,9 +94,9 @@ def pickabg():
                 sys.exit()
             #changing birdno
             if event.type==KEYDOWN and event.key==K_RIGHT:
-                bgno=(bgno+1)%3             
+                bgno=(bgno+1)%4             
             if event.type==KEYDOWN and event.key==K_LEFT:
-                bgno=(bgno-1)%3
+                bgno=(bgno-1)%4
             # If the user presses space or up key, start the game for them
             elif event.type==KEYDOWN and (event.key==K_SPACE or event.key == K_UP):
                 return
@@ -325,7 +325,7 @@ if __name__ == "__main__":
     GAME_SOUNDS['swoosh'] = pygame.mixer.Sound('gallery/audio/swoosh.mp3')
     GAME_SOUNDS['wing'] = pygame.mixer.Sound('gallery/audio/wing.mp3')
 
-    GAME_SPRITES['background'] = [ pygame.image.load(background[i]).convert() for i in range(3) ]
+    GAME_SPRITES['background'] = [ pygame.image.load(background[i]).convert() for i in range(4) ]
     GAME_SPRITES['player'] = [ pygame.image.load(PLAYER[i]).convert_alpha() for i in range(3) ]
 
     while True:
