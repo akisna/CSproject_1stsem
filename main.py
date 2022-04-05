@@ -41,7 +41,7 @@ def welcomeScreen():
                 SCREEN.blit(GAME_SPRITES['background'][bgno], (0, 0))    
                 SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
                 SCREEN.blit(GAME_SPRITES['message'], (messagex,messagey ))    
-                SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
+                SCREEN.blit(GAME_SPRITES['base'][bgno], (basex, GROUNDY))    
                 pygame.display.update()
                 FPSCLOCK.tick(FPS)
 def pickabird():
@@ -102,8 +102,8 @@ def pickabg():
                 return
             else:
                 SCREEN.blit(GAME_SPRITES['background'][bgno], (0, 0))    
-                SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
-                SCREEN.blit(GAME_SPRITES['avatarselect'], (avatarselectx,avatarselecty ))    
+                #SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
+                SCREEN.blit(GAME_SPRITES['bgselect'], (avatarselectx,avatarselecty ))    
                 #SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))    
                 pygame.display.update()
                 FPSCLOCK.tick(FPS)
@@ -243,7 +243,7 @@ def mainGame():
             SCREEN.blit(GAME_SPRITES['pipe'][bgno][0], (upperPipe['x'], upperPipe['y']))
             SCREEN.blit(GAME_SPRITES['pipe'][bgno][1], (lowerPipe['x'], lowerPipe['y']))
 
-        SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY))
+        SCREEN.blit(GAME_SPRITES['base'][bgno], (basex, GROUNDY))
         SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))
         myDigits = [int(x) for x in list(str(score))]
         width = 0
@@ -281,7 +281,7 @@ def getRandomPipe():
     """
     pipeHeight = GAME_SPRITES['pipe'][bgno][0].get_height()
     offset = SCREENHEIGHT/3
-    y2 = offset + random.randrange(0, int(SCREENHEIGHT - GAME_SPRITES['base'].get_height()  - 1.2 *offset))
+    y2 = offset + random.randrange(0, int(SCREENHEIGHT - GAME_SPRITES['base'][bgno].get_height()  - 1.2 *offset))
     pipeX = SCREENWIDTH + 10
     y1 = pipeHeight - y2 + offset
     pipe = [
@@ -314,7 +314,8 @@ if __name__ == "__main__":
     )
     GAME_SPRITES['message'] =pygame.image.load('gallery/sprites/message.png').convert_alpha()
     GAME_SPRITES['avatarselect'] =pygame.image.load('gallery/sprites/avatarselect.png').convert_alpha()
-    GAME_SPRITES['base'] =pygame.image.load('gallery/sprites/base.png').convert_alpha()
+    GAME_SPRITES['bgselect'] =pygame.image.load('gallery/sprites/bgselect.png').convert_alpha()
+    GAME_SPRITES['base'] =[ pygame.image.load(f'gallery/sprites/base{i}.png').convert_alpha() for i in range(1,4) ]
     GAME_SPRITES['pipe'] =[(pygame.transform.rotate(pygame.image.load(PIPE[i]).convert_alpha(), 180), 
     pygame.image.load(PIPE[i]).convert_alpha()) for i in range(3) ]
 
