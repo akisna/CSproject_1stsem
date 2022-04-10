@@ -1,3 +1,4 @@
+from pickle import FALSE
 import random # For generating random numbers
 import sys # We will use sys.exit to exit the program
 import pygame
@@ -5,6 +6,7 @@ from pygame.locals import * # Basic pygame imports
 
 # Global Variables for the game
 FPS = 32
+LIFE=1
 birdno=0
 bgno=0
 SCREENWIDTH = 289
@@ -14,10 +16,39 @@ GROUNDY = SCREENHEIGHT * 0.8
 GAME_SPRITES = {}
 GAME_SOUNDS = {}
 PLAYER = [ f'gallery/sprites/bird{i}.png' for i in range(1,4) ]
+HEART = [ f'gallery/sprites/hearts{i}.png' for i in range(1,4) ]
 background = [ f'gallery/sprites/background{i}.png' for i in range(1,4) ]
 PIPE = [  f'gallery/sprites/pipe{i}.png' for i in range(1,4) ]
+HS='gallery/sprites/highscore.png'
 highscore=0
 score=0
+def selectlevel():
+    global FPS
+    levelx=int((SCREENWIDTH - GAME_SPRITES['level'].get_width())/2)
+    levely=int((SCREENHEIGHT - GAME_SPRITES['level'].get_height())/2)
+    nos=[K_1 , K_2 , K_3 , K_4,K_5 , K_6,K_7 , K_8,K_9 ]
+    while True:
+        for event in pygame.event.get():
+            # if user clicks on cross button, close the game
+            if event.type == QUIT or (event.type==KEYDOWN and event.key == K_ESCAPE):
+                pygame.quit()
+                sys.exit()
+            # If the user presses space or up key, start the game for them
+            elif event.type==KEYDOWN and (event.key==K_SPACE or event.key == K_UP):
+                return
+            if event.type==KEYDOWN and event.key in nos:
+                FPS=FPS-1
+                FPS+=(nos.index(event.key) + 1)
+                return  
+            elif event.type==KEYDOWN and event.key in nos:
+                FPS=FPS-1
+                FPS+=(nos.index(event.key) + 1)
+                return  
+            else:
+                SCREEN.blit(GAME_SPRITES['level'], (levelx,levely))
+                pygame.display.update()    
+                FPSCLOCK.tick(FPS)
+    
 def welcomeScreen():
     """
     Shows welcome images on the screen
@@ -113,10 +144,15 @@ def gameover():
     global highscore
     playerx = int(SCREENWIDTH/5)
     playery = int((SCREENHEIGHT - GAME_SPRITES['player'][birdno].get_height())/2)
-    avatarselectx = int((SCREENWIDTH - GAME_SPRITES['avatarselect'].get_width())/2)
-    avatarselecty = int(SCREENHEIGHT*0.13)
+    avatarselectx = int((SCREENWIDTH - GAME_SPRITES['hs'].get_width())/2)
+    avatarselecty = int(SCREENHEIGHT*0.4)
+    newx = int((SCREENWIDTH - GAME_SPRITES['new'].get_width())/2)
     basex = 0
+    isithigh=False
+    hsy=0.6
     if score>highscore:
+        isithigh=True
+        hsy=0.7
         highscore=score
     while True:
         for event in pygame.event.get():
@@ -130,32 +166,43 @@ def gameover():
                 return
             else:
                 SCREEN.blit(GAME_SPRITES['background'][bgno], (0, 0))    
-               # SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))    
-                #SCREEN.blit(GAME_SPRITES['avatarselect'], (avatarselectx,avatarselecty ))    
-                #SCREEN.blit(GAME_SPRITES['base'], (basex, GROUNDY)) 
+               # SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))
+                if not isithigh:    
+                 SCREEN.blit(GAME_SPRITES['hs'], (avatarselectx,avatarselecty ))
+                else:     
+                 SCREEN.blit(GAME_SPRITES['new'], (newx,SCREENHEIGHT*0.2 )) 
                 myDigits = [int(x) for x in list(str(score))]
                 width = 0
+
+                
                 for digit in myDigits:
                     width += GAME_SPRITES['numbers'][digit].get_width()
                     Xoffset = (SCREENWIDTH - width)/2
 
                 for digit in myDigits:
-                    SCREEN.blit(GAME_SPRITES['numbers'][digit], (Xoffset, SCREENHEIGHT*0.12))
+                    if not highscore:
+                        SCREEN.blit(GAME_SPRITES['numbers'][digit], (Xoffset, SCREENHEIGHT*0.12))
                     Xoffset += GAME_SPRITES['numbers'][digit].get_width()
                 myDigitshs = [int(x) for x in list(str(highscore))]
                 width = 0
+                
+
                 for digit in myDigitshs:
                     width += GAME_SPRITES['numbers'][digit].get_width()
                     Xoffset = (SCREENWIDTH - width)/2
 
                 for digit in myDigitshs:
-                    SCREEN.blit(GAME_SPRITES['numbers'][digit], (Xoffset, SCREENHEIGHT*0.5))
+                    SCREEN.blit(GAME_SPRITES['numbers'][digit], (Xoffset, SCREENHEIGHT*hsy))
                     Xoffset += GAME_SPRITES['numbers'][digit].get_width()   
                 pygame.display.update()
                 FPSCLOCK.tick(FPS)
 def mainGame():
     global score
     global bgno
+    global LIFE
+    isheart = True
+
+    hearty=GAME_SPRITES['heart'].get_height()/2
     score = 0
     playerx = int(SCREENWIDTH/5)
     playery = int(SCREENWIDTH/2)
@@ -200,8 +247,12 @@ def mainGame():
 
 
         crashTest = isCollide(playerx, playery, upperPipes, lowerPipes) # This function will return true if the player is crashed
+        
         if crashTest:
-            return     
+            LIFE=LIFE-1
+            if LIFE==0:
+                return
+            return   
 
         #check for score
         playerMidPos = playerx + GAME_SPRITES['player'][birdno].get_width()/2
@@ -209,7 +260,7 @@ def mainGame():
             pipeMidPos = pipe['x'] + GAME_SPRITES['pipe'][bgno][0].get_width()/2
             if pipeMidPos<= playerMidPos < pipeMidPos +4:
                 score +=1
-                print(f"Your score is {score}") 
+                #print(f"Your score is {score}") 
                 GAME_SOUNDS['point'].play()
 
 
@@ -242,8 +293,11 @@ def mainGame():
         for upperPipe, lowerPipe in zip(upperPipes, lowerPipes):
             SCREEN.blit(GAME_SPRITES['pipe'][bgno][0], (upperPipe['x'], upperPipe['y']))
             SCREEN.blit(GAME_SPRITES['pipe'][bgno][1], (lowerPipe['x'], lowerPipe['y']))
+            #if score%9==0 and LIFE<3: 
+             #   SCREEN.blit(GAME_SPRITES['heart'], (lowerPipe['x'], lowerPipe['y']-SCREENHEIGHT/6-hearty))
 
         SCREEN.blit(GAME_SPRITES['base'][bgno], (basex, GROUNDY))
+        SCREEN.blit(GAME_SPRITES['life'][LIFE-1], (0,0)) #displays no of lifes left
         SCREEN.blit(GAME_SPRITES['player'][birdno], (playerx, playery))
         myDigits = [int(x) for x in list(str(score))]
         width = 0
@@ -254,6 +308,12 @@ def mainGame():
         for digit in myDigits:
             SCREEN.blit(GAME_SPRITES['numbers'][digit], (Xoffset, SCREENHEIGHT*0.12))
             Xoffset += GAME_SPRITES['numbers'][digit].get_width()
+        if (score+1)%10!=0:
+            isheart=True
+        if LIFE<3 and isheart:
+            if (score+1)%10==1 and score>10:
+                LIFE+=1
+                isheart=False
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
@@ -315,6 +375,10 @@ if __name__ == "__main__":
     GAME_SPRITES['message'] =pygame.image.load('gallery/sprites/message.png').convert_alpha()
     GAME_SPRITES['avatarselect'] =pygame.image.load('gallery/sprites/avatarselect.png').convert_alpha()
     GAME_SPRITES['bgselect'] =pygame.image.load('gallery/sprites/bgselect.png').convert_alpha()
+    GAME_SPRITES['hs'] =pygame.image.load(HS).convert_alpha()
+    GAME_SPRITES['level'] =pygame.image.load('gallery/sprites/level.png').convert_alpha()
+    GAME_SPRITES['heart'] =pygame.image.load('gallery/sprites/heart.png').convert_alpha()
+    GAME_SPRITES['new'] =pygame.image.load('gallery/sprites/new.png').convert_alpha()
     GAME_SPRITES['base'] =[ pygame.image.load(f'gallery/sprites/base{i}.png').convert_alpha() for i in range(1,4) ]
     GAME_SPRITES['pipe'] =[(pygame.transform.rotate(pygame.image.load(PIPE[i]).convert_alpha(), 180), 
     pygame.image.load(PIPE[i]).convert_alpha()) for i in range(3) ]
@@ -328,6 +392,9 @@ if __name__ == "__main__":
 
     GAME_SPRITES['background'] = [ pygame.image.load(background[i]).convert() for i in range(3) ]
     GAME_SPRITES['player'] = [ pygame.image.load(PLAYER[i]).convert_alpha() for i in range(3) ]
+    GAME_SPRITES['life'] = [ pygame.image.load(HEART[i]).convert_alpha() for i in range(3) ]
+
+    selectlevel()
 
     while True:
         welcomeScreen() # Shows welcome screen to the user until he presses a button
