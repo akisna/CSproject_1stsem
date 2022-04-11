@@ -313,7 +313,7 @@ def mainGame(lastscore):
         for digit in myDigits:
             SCREEN.blit(GAME_SPRITES['numbers'][digit], (Xoffset, SCREENHEIGHT*0.12))
             Xoffset += GAME_SPRITES['numbers'][digit].get_width()
-        if score%10==1:
+        if score%10!=0:
             isheart = True
         if 0<LIFE<3 and isheart:
             if (score)%10==0 and score>1:
@@ -406,5 +406,5 @@ if __name__ == "__main__":
         welcomeScreen() # Shows welcome screen to the user until he presses a button
         pickabird()
         pickabg()
-        mainGame(0) # This is the main game function
+        mainGame(8) # This is the main game function
         gameover() 
