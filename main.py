@@ -406,5 +406,5 @@ if __name__ == "__main__":
         welcomeScreen() # Shows welcome screen to the user until he presses a button
         pickabird()
         pickabg()
-        mainGame(8) # This is the main game function
+        mainGame(0) # This is the main game function
         gameover() 
