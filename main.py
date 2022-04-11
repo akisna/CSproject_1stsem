@@ -80,11 +80,13 @@ def pickabird():
     Shows welcome images on the screen
     """
     global birdno
+    global LIFE
     playerx = int(SCREENWIDTH/2.2)
     playery = int((SCREENHEIGHT - GAME_SPRITES['player'][birdno].get_height())/2)
     avatarselectx = int((SCREENWIDTH - GAME_SPRITES['avatarselect'].get_width())/2)
     avatarselecty = int(SCREENHEIGHT*0.13)
     basex = 0
+    LIFE = 1
     while True:
         for event in pygame.event.get():
             # if user clicks on cross button, close the game
@@ -196,14 +198,16 @@ def gameover():
                     Xoffset += GAME_SPRITES['numbers'][digit].get_width()   
                 pygame.display.update()
                 FPSCLOCK.tick(FPS)
-def mainGame():
+def mainGame(lastscore):
     global score
     global bgno
     global LIFE
-    isheart = True
+    isheart = False
+    if lastscore==0:
+     isheart = True
 
     hearty=GAME_SPRITES['heart'].get_height()/2
-    score = 0
+    score = lastscore
     playerx = int(SCREENWIDTH/5)
     playery = int(SCREENWIDTH/2)
     basex = 0
@@ -251,7 +255,8 @@ def mainGame():
         if crashTest:
             LIFE=LIFE-1
             if LIFE==0:
-                return
+             return
+            mainGame(score)
             return   
 
         #check for score
@@ -308,12 +313,13 @@ def mainGame():
         for digit in myDigits:
             SCREEN.blit(GAME_SPRITES['numbers'][digit], (Xoffset, SCREENHEIGHT*0.12))
             Xoffset += GAME_SPRITES['numbers'][digit].get_width()
-        if (score+1)%10!=0:
-            isheart=True
-        if LIFE<3 and isheart:
-            if (score+1)%10==1 and score>10:
+        if score%10==1:
+            isheart = True
+        if 0<LIFE<3 and isheart:
+            if (score)%10==0 and score>1:
                 LIFE+=1
                 isheart=False
+        
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
@@ -400,5 +406,5 @@ if __name__ == "__main__":
         welcomeScreen() # Shows welcome screen to the user until he presses a button
         pickabird()
         pickabg()
-        mainGame() # This is the main game function
+        mainGame(0) # This is the main game function
         gameover() 
